@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vincent A. Valdez‑Stanley — Archive</title>
+  <meta name="description" content="One‑page archive of newsletters, videos, and projects by Vincent A. Valdez‑Stanley." />
+  <style>
+    :root{
+      --bg:#0f1115;           /* deep gray, ChatGPT‑ish */
+      --panel:#141820;        /* card background */
+      --muted:#97a0af;        /* secondary text */
+      --text:#e7e9ee;         /* primary text */
+      --accent:#6ee7ff;       /* links, accents */
+      --chip:#242938;         /* tag chip bg */
+      --chipText:#cfd6e6;
+      --border:#222737;       /* subtle borders */
+      --shadow:0 6px 18px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
+      letter-spacing:.2px;
+    }
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Header */
+    .site{
+      position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.2) blur(6px);
+      background:linear-gradient(180deg, rgba(15,17,21,.9), rgba(15,17,21,.65));
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:14px 18px}
+    .row{display:flex; align-items:center; gap:14px}
+    .avatar{
+      width:44px; height:44px; border-radius:10px; flex:0 0 auto; background:#2b2f3d;
+      background-size:cover; background-position:center; border:1px solid var(--border);
+    }
+    .title{font-weight:700; font-size:18px; margin:0}
+    .subtitle{margin:0; font-size:12px; color:var(--muted)}
+
+    /* Controls */
+    .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .control{display:flex; align-items:center; gap:10px; background:var(--panel); padding:10px 12px; border-radius:12px; border:1px solid var(--border)}
+    .control input[type="text"], .control select{
+      background:transparent; border:none; outline:none; color:var(--text); font-size:14px; min-width:160px;
+    }
+
+    /* Tag chips */
+    .chips{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{background:var(--chip); color:var(--chipText); padding:6px 10px; border-radius:999px; font-size:12px; border:1px solid var(--border); cursor:pointer; user-select:none}
+    .chip.active{background:#2c3550; color:#f1f5ff; border-color:#343f66}
+
+    /* List */
+    .list{max-width:1100px; margin:18px auto; padding:0 18px; display:grid; grid-template-columns:1fr; gap:16px}
+    .item{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
+    .itemHeader{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+    .item h3{margin:0; font-size:18px}
+    .meta{color:var(--muted); font-size:12px}
+    .desc{margin:10px 0 14px; color:#d7dbe5}
+    .actions{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{background:#1d2230; border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:10px; font-size:14px; cursor:pointer}
+    .btn:hover{border-color:#3a4360}
+
+    /* Footer */
+    footer{max-width:1100px; margin:40px auto 60px; padding:0 18px; color:var(--muted); font-size:12px}
+
+    /* Viewer dialog */
+    dialog#viewer{
+      width:min(1200px, 96vw); height:min(86vh, 980px); background:#0c0f14; color:var(--text);
+      border:1px solid var(--border); border-radius:16px; padding:0; box-shadow:0 40px 100px rgba(0,0,0,.6);
+    }
+    #viewer header{display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border)}
+    #viewer iframe{width:100%; height:calc(100% - 48px); border:0; background:#0c0f14}
+    .ghost{opacity:.66}
+
+    /* Small screens */
+    @media (max-width:640px){
+      .avatar{width:36px; height:36px}
+      .title{font-size:16px}
+      .desc{font-size:14px}
+    }
+  </style>
+</head>
+<body>
+  <!-- Sticky header -->
+  <header class="site">
+    <div class="wrap">
+      <div class="row">
+        <!-- Replace avatar.jpg with your square headshot in /assets/avatar.jpg -->
+        <div id="avatar" class="avatar" style="background-image:url('assets/avatar.jpg')"></div>
+        <div>
+          <p class="title">Vincent A. Valdez‑Stanley</p>
+          <p class="subtitle">Archive of newsletters, videos, and projects — dark, simple, single page</p>
+        </div>
+      </div>
+
+      <!-- Controls: search, year, tags -->
+      <div class="controls" aria-label="filters">
+        <label class="control" title="Search title & description">
+          <span class="ghost">Search</span>
+          <input id="q" type="text" placeholder="e.g., Newsletter 13" />
+        </label>
+        <label class="control" title="Filter by year">
+          <span class="ghost">Year</span>
+          <select id="year"><option value="">All</option></select>
+        </label>
+        <div id="tags" class="chips" role="group" aria-label="Filter by tag"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content list -->
+  <main class="list" id="list" aria-live="polite"></main>
+
+  <footer>
+    <p>Tip: Click <em>View</em> to open PDFs in a built‑in viewer without downloading. Hosted on GitHub Pages.</p>
+  </footer>
+
+  <!-- PDF/Media Viewer -->
+  <dialog id="viewer">
+    <header>
+      <strong style="padding-left:4px">Viewer</strong>
+      <button class="btn" onclick="closeViewer()">Close</button>
+    </header>
+    <iframe id="frame" title="Document viewer"></iframe>
+  </dialog>
+
+  <script>
+    /* ===== CONTENT DATA =====
+       Add new items to the array below. Fields:
+       - id: short slug
+       - title: display title
+       - date: ISO (YYYY-MM-DD)
+       - tags: ["Newsletters", "Videos", "Projects", ...]
+       - desc: short description
+       - url: path to PDF or media (relative to site root)
+       - kind: "pdf" | "link" | "video" (pdf opens in viewer; others open in new tab)
+    */
+    const ITEMS = [
+      {
+        id: 'n13',
+        title: 'Newsletter No. 13 — The Bennett 7.5 Method, Red Morphology, and More',
+        date: '2025-09-30',
+        tags: ['Newsletters'],
+        desc: 'Productivity, memory, and small essays; with embedded visuals and a time‑tracking app update.',
+        url: 'newsletters/newsletter-13.pdf',
+        kind: 'pdf'
+      },
+      // Example older entries you can keep or remove
+      {
+        id: 'video-yt-setup',
+        title: 'Video: My Home Office and Channel Intro',
+        date: '2025-02-18',
+        tags: ['Videos'],
+        desc: 'A quick five‑minute tour and purpose statement for the channel.',
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        kind: 'link'
+      },
+      {
+        id: 'proj-timer',
+        title: 'Project: Responsive Time‑Tracking App (HTML)',
+        date: '2025-09-24',
+        tags: ['Projects'],
+        desc: 'A browser‑based multi‑lane timer with a visual timetable and manual session edits.',
+        url: 'projects/timer/index.html',
+        kind: 'link'
+      }
+    ];
+
+    /* ===== RENDERING ===== */
+    const list = document.getElementById('list');
+    const q = document.getElementById('q');
+    const year = document.getElementById('year');
+    const tags = document.getElementById('tags');
+
+    // derive years and tags
+    const years = [...new Set(ITEMS.map(i=>new Date(i.date).getFullYear()))].sort((a,b)=>b-a);
+    years.forEach(y=>{ const opt=document.createElement('option'); opt.value=String(y); opt.textContent=String(y); year.appendChild(opt); });
+
+    const tagSet = new Set(ITEMS.flatMap(i=>i.tags));
+    const activeTags = new Set();
+    [...tagSet].sort().forEach(t=>{
+      const chip = document.createElement('button');
+      chip.className = 'chip'; chip.textContent = t; chip.setAttribute('data-tag', t);
+      chip.addEventListener('click', ()=>{ chip.classList.toggle('active'); activeTags.has(t) ? activeTags.delete(t) : activeTags.add(t); render(); });
+      tags.appendChild(chip);
+    });
+
+    [q, year].forEach(el=>el.addEventListener('input', render));
+
+    function matches(item){
+      const term = q.value.trim().toLowerCase();
+      const okTerm = !term || (item.title+" "+item.desc).toLowerCase().includes(term);
+      const okYear = !year.value || String(new Date(item.date).getFullYear())===year.value;
+      const okTags = activeTags.size===0 || item.tags.some(t=>activeTags.has(t));
+      return okTerm && okYear && okTags;
+    }
+
+    function render(){
+      // sort by date desc
+      const sorted = [...ITEMS].sort((a,b)=> new Date(b.date) - new Date(a.date));
+      list.innerHTML = '';
+      sorted.filter(matches).forEach(item=> list.appendChild(renderItem(item)));
+      if(!list.children.length){
+        const empty = document.createElement('p');
+        empty.className='ghost wrap';
+        empty.textContent='No items match your filters.';
+        list.appendChild(empty);
+      }
+    }
+
+    function renderItem(item){
+      const el = document.createElement('article'); el.className='item';
+      const d = new Date(item.date);
+      const dateText = d.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric'});
+      el.innerHTML = `
+        <div class="itemHeader">
+          <h3>${escapeHTML(item.title)}</h3>
+          <div class="meta">${dateText}</div>
+        </div>
+        <div class="desc">${escapeHTML(item.desc)}</div>
+        <div class="chips">${item.tags.map(t=>`<span class="chip" aria-hidden="true">${escapeHTML(t)}</span>`).join('')}</div>
+        <div class="actions">
+          ${item.kind==='pdf' ? `<button class="btn" data-view="${item.url}">View</button>`:''}
+          <a class="btn" href="${item.url}" ${item.kind==='pdf' ? 'download' : 'target="_blank" rel="noopener"'}>${item.kind==='pdf' ? 'Download' : 'Open'}</a>
+        </div>`;
+      // hook up view button for PDFs
+      const viewBtn = el.querySelector('[data-view]');
+      if(viewBtn){ viewBtn.addEventListener('click', ()=> openViewer(viewBtn.getAttribute('data-view'))); }
+      return el;
+    }
+
+    // simple escape
+    function escapeHTML(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m])); }
+
+    // viewer
+    const dialog = document.getElementById('viewer');
+    const frame = document.getElementById('frame');
+    function openViewer(src){ frame.src = src; dialog.showModal(); }
+    function closeViewer(){ dialog.close(); frame.src='about:blank'; }
+    window.closeViewer = closeViewer; // expose to header button
+
+    // initial render
+    render();
+  </script>
+</body>
+</html>
