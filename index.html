@@ -67,16 +67,10 @@
     .btn:hover{border-color:#3a4360}
 
     /* Footer */
-    footer{max-width:1100px; margin:40px auto 60px; padding:0 18px; color:var(--muted); font-size:12px}
-
-    /* Viewer dialog */
-    dialog#viewer{
-      width:min(1200px, 96vw); height:min(86vh, 980px); background:#0c0f14; color:var(--text);
-      border:1px solid var(--border); border-radius:16px; padding:0; box-shadow:0 40px 100px rgba(0,0,0,.6);
-    }
-    #viewer header{display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border)}
-    #viewer iframe{width:100%; height:calc(100% - 48px); border:0; background:#0c0f14}
-    .ghost{opacity:.66}
+    footer{max-width:1100px; margin:40px auto 60px; padding:0 18px; color:var(--muted); font-size:12px}    /* Inline PDF viewer */
+    .pdfWrap{margin-top:12px; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#0c0f14}
+    .pdfBar{display:flex; justify-content:flex-end; gap:10px; padding:8px; border-bottom:1px solid var(--border); background:#0d1117}
+    .pdfFrame{width:100%; height:820px; border:0; display:block; background:#0c0f14}
 
     /* Small screens */
     @media (max-width:640px){
@@ -92,7 +86,7 @@
     <div class="wrap">
       <div class="row">
         <!-- Replace avatar.jpg with your square headshot in /assets/avatar.jpg -->
-        <div id="avatar" class="avatar" style="background-image:url('avatar.jpg')"></div>
+        <div id="avatar" class="avatar" style="background-image:url('assets/avatar.jpg')"></div>
         <div>
           <p class="title">Vincent Aem Valdez‑Stanley</p>
           <p class="subtitle">Archive of newsletters, videos, and projects.</p>
@@ -118,19 +112,8 @@
   <main class="list" id="list" aria-live="polite"></main>
 
   <footer>
-    <p>Tip: Click <em>View</em> to open PDFs in a built‑in viewer without downloading. Hosted on GitHub Pages.</p>
-  </footer>
-
-  <!-- PDF/Media Viewer -->
-  <dialog id="viewer">
-    <header>
-      <strong style="padding-left:4px">Viewer</strong>
-      <button class="btn" onclick="closeViewer()">Close</button>
-    </header>
-    <iframe id="frame" title="Document viewer"></iframe>
-  </dialog>
-
-  <script>
+    <p>Tip: PDFs render inline below each post. Use the download button in the post header to save a copy.</p>
+  </footer><script>
     /* ===== CONTENT DATA =====
        Add new items to the array below. Fields:
        - id: short slug
@@ -144,10 +127,10 @@
     const ITEMS = [
       {
         id: 'n12',
-        title: 'N12',
+        title: 'Newsletter No. 12 — The Stopwatch',
         date: '2025-09-30',
         tags: ['Newsletters'],
-        desc: 'Test',
+        desc: 'Productivity, memory, and small essays; with embedded visuals and a time‑tracking app update.',
         url: 'N12   33SAT20250816.pdf',
         kind: 'pdf'
       },
@@ -218,32 +201,37 @@
       const el = document.createElement('article'); el.className='item';
       const d = new Date(item.date);
       const dateText = d.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric'});
-      el.innerHTML = `
+
+      // header
+      const tagsHtml = item.tags.map(t=>`<span class="chip" aria-hidden="true">${escapeHTML(t)}</span>`).join('');
+      const header = `
         <div class="itemHeader">
           <h3>${escapeHTML(item.title)}</h3>
           <div class="meta">${dateText}</div>
         </div>
         <div class="desc">${escapeHTML(item.desc)}</div>
-        <div class="chips">${item.tags.map(t=>`<span class="chip" aria-hidden="true">${escapeHTML(t)}</span>`).join('')}</div>
+        <div class="chips">${tagsHtml}</div>
         <div class="actions">
-          ${item.kind==='pdf' ? `<button class="btn" data-view="${item.url}">View</button>`:''}
-          <a class="btn" href="${item.url}" ${item.kind==='pdf' ? 'download' : 'target="_blank" rel="noopener"'}>${item.kind==='pdf' ? 'Download' : 'Open'}</a>
+          ${item.kind==='pdf' ? `<a class="btn" href="${item.url}" download>Download PDF</a>`:''}
+          ${item.kind!=='pdf' ? `<a class="btn" href="${item.url}" target="_blank" rel="noopener">Open</a>`:''}
         </div>`;
-      // hook up view button for PDFs
-      const viewBtn = el.querySelector('[data-view]');
-      if(viewBtn){ viewBtn.addEventListener('click', ()=> openViewer(viewBtn.getAttribute('data-view'))); }
+
+      el.innerHTML = header;
+
+      // inline viewer for PDFs (instagram‑style feed)
+      if(item.kind === 'pdf'){
+        const box = document.createElement('div');
+        box.className = 'pdfWrap';
+        box.innerHTML = `<div class="pdfBar"><span class="ghost">Inline preview</span></div><iframe class="pdfFrame" loading="lazy" src="${item.url}"></iframe>`;
+        el.appendChild(box);
+      }
       return el;
     }
 
     // simple escape
     function escapeHTML(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m])); }
-
-    // viewer
-    const dialog = document.getElementById('viewer');
-    const frame = document.getElementById('frame');
-    function openViewer(src){ frame.src = src; dialog.showModal(); }
-    function closeViewer(){ dialog.close(); frame.src='about:blank'; }
-    window.closeViewer = closeViewer; // expose to header button
+    // simple escape
+    function escapeHTML(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m])); }
 
     // initial render
     render();
