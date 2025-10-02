@@ -297,8 +297,10 @@
 
       // inline viewer for PDFs (feed-style)
 if (item.kind === 'pdf') {
-  const encodedUrl = encodeURIComponent(window.location.origin + '/' + item.url);
-  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodedUrl}#page=1`;
+  // Build a correct absolute URL that includes the /Art/ path (or any repo path)
+  const absoluteUrl = new URL(item.url, window.location.href).href;
+  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(absoluteUrl)}#page=1`;
+
   const box = document.createElement('div');
   box.className = 'pdfWrap';
   box.innerHTML = `
@@ -310,6 +312,7 @@ if (item.kind === 'pdf') {
     <iframe class="pdfFrame" loading="lazy" src="${viewerUrl}"></iframe>
   `;
   el.appendChild(box);
+}
 }
       return el;
     }
