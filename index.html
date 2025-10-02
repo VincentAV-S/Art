@@ -296,14 +296,21 @@
       el.innerHTML = header;
 
       // inline viewer for PDFs (feed-style)
-      if(item.kind === 'pdf'){
-        const box = document.createElement('div');
-        box.className = 'pdfWrap';
-        // Force start at page 1 and fit width
-        const src = `${item.url}#page=1&zoom=page-width&view=FitH`;
-        box.innerHTML = `<div class="pdfBar"><span class="ghost">Inline preview</span></div><iframe class="pdfFrame" loading="lazy" src="${src}"></iframe>`;
-        el.appendChild(box);
-      }
+if (item.kind === 'pdf') {
+  const encodedUrl = encodeURIComponent(window.location.origin + '/' + item.url);
+  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodedUrl}#page=1`;
+  const box = document.createElement('div');
+  box.className = 'pdfWrap';
+  box.innerHTML = `
+    <div class="pdfBar">
+      <span class="ghost">Inline preview</span>
+      <a class="btn" href="${item.url}" download>Download PDF</a>
+      <a class="btn" href="${item.url}" target="_blank" rel="noopener">Open in New Tab</a>
+    </div>
+    <iframe class="pdfFrame" loading="lazy" src="${viewerUrl}"></iframe>
+  `;
+  el.appendChild(box);
+}
       return el;
     }
 
