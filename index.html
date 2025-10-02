@@ -297,21 +297,41 @@
 
       // inline viewer for PDFs (feed-style)
 if (item.kind === 'pdf') {
-  // Build a correct absolute URL that includes the /Art/ path (or any repo path)
-  const absoluteUrl = new URL(item.url, window.location.href).href;
-  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(absoluteUrl)}#page=1`;
-
   const box = document.createElement('div');
   box.className = 'pdfWrap';
-  box.innerHTML = `
-    <div class="pdfBar">
-      <span class="ghost">Inline preview</span>
-      <a class="btn" href="${item.url}" download>Download PDF</a>
-      <a class="btn" href="${item.url}" target="_blank" rel="noopener">Open in New Tab</a>
-    </div>
-    <iframe class="pdfFrame" loading="lazy" src="${viewerUrl}"></iframe>
-  `;
+
+  let viewerHtml = '';
+  try {
+    // Build a correct absolute URL that includes the project path (e.g., /Art/)
+    const absoluteUrl = new URL(item.url, window.location.href).href;
+    const viewerUrl =
+      'https://mozilla.github.io/pdf.js/web/viewer.html?file=' +
+      encodeURIComponent(absoluteUrl) +
+      '#page=1';
+
+    viewerHtml = `
+      <div class="pdfBar">
+        <span class="ghost">Inline preview</span>
+        <a class="btn" href="${item.url}" download>Download PDF</a>
+        <a class="btn" href="${item.url}" target="_blank" rel="noopener">Open in New Tab</a>
+      </div>
+      <iframe class="pdfFrame" loading="lazy" src="${viewerUrl}"></iframe>
+    `;
+  } catch (e) {
+    // If anything goes wrong building the URL, still render buttons
+    console.error('PDF viewer error for', item.url, e);
+    viewerHtml = `
+      <div class="pdfBar">
+        <span class="ghost">Inline preview unavailable</span>
+        <a class="btn" href="${item.url}" download>Download PDF</a>
+        <a class="btn" href="${item.url}" target="_blank" rel="noopener">Open in New Tab</a>
+      </div>
+    `;
+  }
+
+  box.innerHTML = viewerHtml;
   el.appendChild(box);
+}
 }
 }
       return el;
