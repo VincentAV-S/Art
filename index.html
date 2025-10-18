@@ -28,32 +28,33 @@
     a{color:var(--accent); text-decoration:none}
     a:hover{text-decoration:underline}
 
-    /* Header */
+    /* --- Compact header to match Portfolio Projects page --- */
+    .site {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: saturate(1.1) blur(6px);
+      background: linear-gradient(180deg, rgba(15,17,21,.96), rgba(15,17,21,.78));
+      border-bottom: 1px solid var(--border);
+    }
+    /* Smooth slide-away header */
     .site{
-      position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.2) blur(6px);
-      background:linear-gradient(180deg, rgba(15,17,21,.9), rgba(15,17,21,.65));
-      border-bottom:1px solid var(--border);
+      transition: transform .36s ease, opacity .36s ease;
     }
-    .wrap{max-width:1100px; margin:0 auto; padding:14px 18px}
-    .row{display:flex; align-items:center; gap:14px}
+    .site.off{
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 6px 12px; }
+    .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .avatar{
-      width:44px; height:44px; border-radius:10px; flex:0 0 auto; background:#2b2f3d;
+      width:28px; height:28px; border-radius:6px; flex:0 0 auto; background:#2b2f3d;
       background-size:cover; background-position:center; border:1px solid var(--border);
+      background-image:url('avatar.jpg'); /* replace if needed */
     }
-    .title{font-weight:700; font-size:18px; margin:0}
-    .subtitle{margin:0; font-size:12px; color:var(--muted)}
-
-    /* Controls */
-    .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
-    .control{display:flex; align-items:center; gap:10px; background:var(--panel); padding:10px 12px; border-radius:12px; border:1px solid var(--border)}
-    .control input[type="text"], .control select{
-      background:transparent; border:none; outline:none; color:var(--text); font-size:14px; min-width:160px;
-    }
-
-    /* Tag chips */
-    .chips{display:flex; gap:8px; flex-wrap:wrap}
-    .chip{background:var(--chip); color:var(--chipText); padding:6px 10px; border-radius:999px; font-size:12px; border:1px solid var(--border); cursor:pointer; user-select:none}
-    .chip.active{background:#2c3550; color:#f1f5ff; border-color:#343f66}
+    .title{font-weight:700; font-size:15px; margin:0}
+    .subtitle{margin:0; font-size:10.5px; color:var(--muted)}
 
     /* List */
     .list{max-width:1100px; margin:18px auto; padding:0 18px; display:grid; grid-template-columns:1fr; gap:16px}
@@ -66,20 +67,21 @@
     .btn{background:#1d2230; border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:10px; font-size:14px; cursor:pointer}
     .btn:hover{border-color:#3a4360}
 
+    /* Inline PDF viewer (non-collapsible) */
+    .pdfWrap{margin-top:12px; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#0c0f14}
+    .pdfBar{display:flex; align-items:center; gap:10px; padding:8px; border-bottom:1px solid var(--border); background:#0d1117}
+    .pdfBar .ghost{margin-right:auto; color:#9aa3b2; font-size:12px}
+    .pdfFrame{width:100%; height:82vh; border:0; display:block; background:#0c0f14}
+
     /* Footer */
     footer{max-width:1100px; margin:40px auto 60px; padding:0 18px; color:var(--muted); font-size:12px}
 
-    /* Inline PDF viewer */
-    .pdfWrap{margin-top:12px; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#0c0f14}
-    .pdfBar{display:flex; justify-content:flex-end; align-items:center; gap:10px; padding:8px; border-bottom:1px solid var(--border); background:#0d1117}
-    .pdfBar .ghost{margin-right:auto; color:#9aa3b2; font-size:12px}
-    .pdfFrame{width:100%; height:820px; border:0; display:block; background:#0c0f14}
-
     /* Small screens */
     @media (max-width:640px){
-      .avatar{width:36px; height:36px}
-      .title{font-size:16px}
+      .avatar{width:28px; height:28px}
+      .title{font-size:15px}
       .desc{font-size:14px}
+      .pdfFrame{height:70vh}
     }
   </style>
 </head>
@@ -88,26 +90,13 @@
   <header class="site">
     <div class="wrap">
       <div class="row">
-        <!-- Put your square headshot at this path or change it -->
-        <div id="avatar" class="avatar" style="background-image:url('avatar.jpg')"></div>
+        <div id="avatar" class="avatar" aria-hidden="true"></div>
         <div>
           <p class="title">Vincent Aem Valdez-Stanley</p>
           <p class="subtitle">Archive of Projects.</p>
         </div>
       </div>
-
-      <!-- Controls: search, year, tags -->
-      <div class="controls" aria-label="filters">
-        <label class="control" title="Search title & description">
-          <span class="ghost">Search</span>
-          <input id="q" type="text" placeholder="e.g., Newsletter 13" />
-        </label>
-        <label class="control" title="Filter by year">
-          <span class="ghost">Year</span>
-          <select id="year"><option value="">All</option></select>
-        </label>
-        <div id="tags" class="chips" role="group" aria-label="Filter by tag"></div>
-      </div>
+      <!-- NOTE: search/year/tag controls removed to match request -->
     </div>
   </header>
 
@@ -115,7 +104,7 @@
   <main class="list" id="list" aria-live="polite"></main>
 
   <footer>
-    <p>Tip: PDFs render inline below each post. Use the download button in the post header to save a copy.</p>
+    <p>Tip: PDFs render inline below each post. Use the Download/Open buttons in the header of each post.</p>
   </footer>
 
   <script>
@@ -229,53 +218,20 @@
         url: 'N000013   40THU20251002.pdf',
         kind: 'pdf'
       }
+
+      // Add N000014 here after you export it (see note below)
     ];
 
-    /* ===== RENDERING ===== */
     const list = document.getElementById('list');
-    const q = document.getElementById('q');
-    const year = document.getElementById('year');
-    const tags = document.getElementById('tags');
-
-    // derive years and tags
-    const years = [...new Set(ITEMS.map(i=>new Date(i.date).getFullYear()))].sort((a,b)=>b-a);
-    years.forEach(y=>{
-      const opt=document.createElement('option');
-      opt.value=String(y); opt.textContent=String(y);
-      year.appendChild(opt);
-    });
-
-    const tagSet = new Set(ITEMS.flatMap(i=>i.tags));
-    const activeTags = new Set();
-    [...tagSet].sort().forEach(t=>{
-      const chip = document.createElement('button');
-      chip.className = 'chip'; chip.textContent = t; chip.setAttribute('data-tag', t);
-      chip.addEventListener('click', ()=>{
-        chip.classList.toggle('active');
-        activeTags.has(t) ? activeTags.delete(t) : activeTags.add(t);
-        render();
-      });
-      tags.appendChild(chip);
-    });
-
-    [q, year].forEach(el=>el.addEventListener('input', render));
-
-    function matches(item){
-      const term = q.value.trim().toLowerCase();
-      const okTerm = !term || (item.title+" "+item.desc).toLowerCase().includes(term);
-      const okYear = !year.value || String(new Date(item.date).getFullYear())===year.value;
-      const okTags = activeTags.size===0 || item.tags.some(t=>activeTags.has(t));
-      return okTerm && okYear && okTags;
-    }
 
     function render(){
       const sorted = [...ITEMS].sort((a,b)=> new Date(b.date) - new Date(a.date));
       list.innerHTML = '';
-      sorted.filter(matches).forEach(item=> list.appendChild(renderItem(item)));
+      sorted.forEach(item=> list.appendChild(renderItem(item)));
       if(!list.children.length){
         const empty = document.createElement('p');
         empty.className='ghost wrap';
-        empty.textContent='No items match your filters.';
+        empty.textContent='No items to display.';
         list.appendChild(empty);
       }
     }
@@ -283,52 +239,42 @@
     function renderItem(item){
       const el = document.createElement('article'); el.className='item';
       const d = new Date(item.date);
-      const dateText = d.toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'});
+      const dateText = isNaN(d) ? '' : d.toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'});
 
-      const tagsHtml = item.tags.map(t=>`<span class="chip" aria-hidden="true">${escapeHTML(t)}</span>`).join('');
-      const header = `
+      // Build the header (no filter chips)
+      el.innerHTML = `
         <div class="itemHeader">
           <h3>${escapeHTML(item.title)}</h3>
           <div class="meta">${dateText}</div>
         </div>
-        <div class="desc">${escapeHTML(item.desc)}</div>
-        <div class="chips">${tagsHtml}</div>
+        ${item.desc ? `<div class="desc">${escapeHTML(item.desc)}</div>` : ''}
         <div class="actions">
-          ${item.kind==='pdf' ? `<a class="btn" href="${item.url}" download>Download PDF</a>`:''}
-          ${item.kind!=='pdf' ? `<a class="btn" href="${item.url}" target="_blank" rel="noopener">Open</a>`:''}
+          ${item.kind === 'pdf' ? `
+            <a class="btn" href="${item.url}" download>Download PDF</a>
+            <a class="btn" href="${item.url}" target="_blank" rel="noopener">Open in New Tab</a>
+          ` : `
+            <a class="btn" href="${item.url}" target="_blank" rel="noopener">Open</a>
+          `}
         </div>`;
-      el.innerHTML = header;
 
-      // ---- Inline viewer for PDFs (universal PDF.js version, fail-safe) ----
+      // ---- Inline viewer for PDFs (ALWAYS visible, not collapsible) ----
       if (item.kind === 'pdf') {
         const box = document.createElement('div');
         box.className = 'pdfWrap';
 
-        let viewerHtml = '';
-        try {
-          // Build absolute URL that includes project path (e.g., /Art/) and handles spaces
-          const absoluteUrl = new URL(item.url, window.location.href).href;
-          const viewerUrl = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' +
-                            encodeURIComponent(absoluteUrl) + '#page=1';
+        // Build absolute URL and set zoom like Portfolio: page-fit (desktop) / page-width (mobile)
+        const absoluteUrl = new URL(item.url, window.location.href).href;
+        const zoomMode = window.innerWidth < 640 ? 'page-width' : 'page-fit';
+        const viewerUrl = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' +
+                          encodeURIComponent(absoluteUrl) + `#page=1&zoom=${zoomMode}`;
 
-          viewerHtml = `
-            <div class="pdfBar">
-              <span class="ghost">Inline preview</span>
-              <a class="btn" href="${item.url}" download>Download PDF</a>
-              <a class="btn" href="${item.url}" target="_blank" rel="noopener">Open in New Tab</a>
-            </div>
-            <iframe class="pdfFrame" loading="lazy" src="${viewerUrl}"></iframe>
-          `;
-        } catch (e) {
-          console.error('PDF viewer error for', item.url, e);
-          viewerHtml = `
-            <div class="pdfBar">
-              <span class="ghost">Inline preview unavailable</span>
-              <a class="btn" href="${item.url}" download>Download PDF</a>
-              <a class="btn" href="${item.url}" target="_blank" rel="noopener">Open in New Tab</a>
-            </div>
-          `;
-        }
+        // Bar WITHOUT duplicate buttons or tags
+        const viewerHtml = `
+          <div class="pdfBar">
+            <span class="ghost">Inline preview</span>
+          </div>
+          <iframe class="pdfFrame" loading="lazy" src="${viewerUrl}"></iframe>
+        `;
 
         box.innerHTML = viewerHtml;
         el.appendChild(box);
@@ -339,11 +285,28 @@
 
     // escape helper
     function escapeHTML(s){
-      return s.replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+      return String(s).replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
     // initial render
     render();
   </script>
+  <script>
+  (function(){
+    const header = document.querySelector('.site');
+    let hidden = false;
+
+    window.addEventListener('scroll', () => {
+      const atTop = window.scrollY <= 0;
+      if (!atTop && !hidden) {
+        header.classList.add('off');
+        hidden = true;
+      } else if (atTop && hidden) {
+        header.classList.remove('off');
+        hidden = false;
+      }
+    }, { passive: true });
+  })();
+</script>
 </body>
 </html>
